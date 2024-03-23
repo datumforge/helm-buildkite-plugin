@@ -37,7 +37,7 @@ export WHICH_STUB_DEBUG=/dev/tty
   unstub git
 }
 
-@test "Commits no changes, no chart" {
+@test "Commits no changes, no dependencies to update" {
   export BUILDKITE_BRANCH=meow
 
   stub yq \

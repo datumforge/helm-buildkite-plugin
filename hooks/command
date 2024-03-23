@@ -19,7 +19,7 @@ result=$(git diff --exit-code)
 
 message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
 
-if [ $result -ne 0 ]; then
+if [ "${result}" -ne 0 ]; then
     if [[ -n ${BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME+x} ]]
     then
     git config user.name "$BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME"
