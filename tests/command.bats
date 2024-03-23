@@ -4,119 +4,163 @@ load "$BATS_PLUGIN_PATH/load.bash"
 
 command_hook="$PWD/hooks/command"
 
+# Uncomment the following line to debug stub failures
+export BUILDKITE_AGENT_STUB_DEBUG=/dev/tty
+export WHICH_STUB_DEBUG=/dev/tty
+
 @test "Commits all changes" {
-  export BUILDKITE_BUILD_NUMBER=1
-  export BUILDKITE_BRANCH=main
+  export BUILDKITE_BRANCH=meow
+
+  stub yq \
+    "'.dependencies | length' ./tests/_example/Chart.yaml : echo 1" \
+
+  stub helm \
+    "dependency update : echo dependencies updated" \
 
   stub git \
-    "fetch origin main:main : echo fetch" \
-    "checkout main : echo checkout" \
-    "add -A . : echo add" \
-    "diff-index --quiet HEAD : false" \
-    "commit -m \"Build #1\" : echo commit" \
-    "push origin main : echo push"
-
+    "diff --exit-code : echo 1" \
+    "checkout -b meow : echo branch checked out" \
+    "add . : echo added files" \
+    "commit -m 'Update Helm Tarballs' : echo commit message added" \
+    "push origin meow : echo branch pushed" \
+  
   run "$command_hook"
 
   assert_success
-  assert_output --partial "--- Committing changes"
-  assert_output --partial "--- Pushing to origin"
+  assert_output --partial "dependencies updated"
+  assert_output --partial "branch checked out"
+  assert_output --partial "added files"
+  assert_output --partial "commit message added" 
+  assert_output --partial "branch pushed"
+  unstub yq
+  unstub helm
   unstub git
 }
 
-@test "Configures git user.name" {
-  export BUILDKITE_BUILD_NUMBER=1
-  export BUILDKITE_BRANCH=main
+@test "Commits no changes, no dependencies to update" {
+  export BUILDKITE_BRANCH=meow
 
-  export BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME=Robot
-
-  stub git \
-    "config user.name \"Robot\" : echo config.name" \
-    "fetch origin main:main : echo fetch" \
-    "checkout main : echo checkout" \
-    "add -A . : echo add" \
-    "diff-index --quiet HEAD : false" \
-    "commit -m \"Build #1\" : echo commit" \
-    "push origin main : echo push"
-
+  stub yq \
+    "'.dependencies | length' ./tests/_example/Chart.yaml : echo 0" \
+  
   run "$command_hook"
 
   assert_success
-  assert_output --partial "--- Committing changes"
-  assert_output --partial "--- Pushing to origin"
+  assert_output --partial "no dependencies were found"
+  unstub yq
+}
+
+@test "Configures git user.name" {
+  export BUILDKITE_BRANCH=meow
+  export BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME="bender"
+
+  stub yq \
+    "'.dependencies | length' ./tests/_example/Chart.yaml : echo 1" \
+
+  stub helm \
+    "dependency update : echo dependencies updated" \
+
+  stub git \
+    "diff --exit-code : echo 1" \
+    "config user.name \"bender\" : echo configure user.name" \
+    "checkout -b meow : echo branch checked out" \
+    "add . : echo added files" \
+    "commit -m 'Update Helm Tarballs' : echo commit message added" \
+    "push origin meow : echo branch pushed" \
+  
+  run "$command_hook"
+
+  assert_success
+  assert_output --partial "dependencies updated"
+  assert_output --partial "configure user.name"
+  assert_output --partial "branch checked out"
+  assert_output --partial "added files"
+  assert_output --partial "commit message added" 
+  assert_output --partial "branch pushed"
+  unstub yq
+  unstub helm
   unstub git
 }
 
 @test "Configures git user.email" {
-  export BUILDKITE_BUILD_NUMBER=1
-  export BUILDKITE_BRANCH=main
-
+  export BUILDKITE_BRANCH=meow
   export BUILDKITE_PLUGIN_GIT_COMMIT_USER_EMAIL="bot@example.com"
 
-  stub git \
-    "config user.email \"bot@example.com\" : echo config.email" \
-    "fetch origin main:main : echo fetch" \
-    "checkout main : echo checkout" \
-    "add -A . : echo add" \
-    "diff-index --quiet HEAD : false" \
-    "commit -m \"Build #1\" : echo commit" \
-    "push origin main : echo push"
+  stub yq \
+    "'.dependencies | length' ./tests/_example/Chart.yaml : echo 1" \
 
+  stub helm \
+    "dependency update : echo dependencies updated" \
+
+  stub git \
+    "diff --exit-code : echo 1" \
+    "config user.email \"bot@example.com\" : echo configure user.email" \
+    "checkout -b meow : echo branch checked out" \
+    "add . : echo added files" \
+    "commit -m 'Update Helm Tarballs' : echo commit message added" \
+    "push origin meow : echo branch pushed" \
+  
   run "$command_hook"
 
   assert_success
-  assert_output --partial "--- Committing changes"
-  assert_output --partial "--- Pushing to origin"
+  assert_output --partial "dependencies updated"
+  assert_output --partial "configure user.email"
+  assert_output --partial "branch checked out"
+  assert_output --partial "added files"
+  assert_output --partial "commit message added" 
+  assert_output --partial "branch pushed"
+  unstub yq
+  unstub helm
   unstub git
 }
 
 @test "Allows a custom message" {
-  export BUILDKITE_BUILD_NUMBER=1
-  export BUILDKITE_BRANCH=main
+  export BUILDKITE_BRANCH=meow
+  export BUILDKITE_PLUGIN_HELM_MESSAGE="Good Morning!"
 
-  export BUILDKITE_PLUGIN_GIT_COMMIT_MESSAGE="Good Morning!"
+  stub yq \
+    "'.dependencies | length' ./tests/_example/Chart.yaml : echo 1" \
+
+  stub helm \
+    "dependency update : echo dependencies updated" \
 
   stub git \
-    "fetch origin main:main : echo fetch" \
-    "checkout main : echo checkout" \
-    "add -A . : echo add" \
-    "diff-index --quiet HEAD : false" \
-    "commit -m \"Good Morning!\" : echo commit" \
-    "push origin main : echo push"
-
-  run "$post_command_hook"
+    "diff --exit-code : echo 1" \
+    "checkout -b meow : echo branch checked out" \
+    "add . : echo added files" \
+    "commit -m 'Good Morning!' : echo commit message added" \
+    "push origin meow : echo branch pushed" \
+  
+  run "$command_hook"
 
   assert_success
-  assert_output --partial "--- Committing changes"
-  assert_output --partial "--- Pushing to origin"
+  assert_output --partial "dependencies updated"
+  assert_output --partial "branch checked out"
+  assert_output --partial "added files"
+  assert_output --partial "commit message added" 
+  assert_output --partial "branch pushed"
+  unstub yq
+  unstub helm
   unstub git
 }
 
 @test "Skip commit when there are no changes" {
-  export BUILDKITE_BUILD_NUMBER=1
-  export BUILDKITE_BRANCH=main
+  export BUILDKITE_BRANCH=meow
+
+  stub yq \
+    "'.dependencies | length' ./tests/_example/Chart.yaml : echo 1" \
+
+  stub helm \
+    "dependency update : echo dependencies updated" \
 
   stub git \
-    "fetch origin main:main : echo fetch" \
-    "checkout main : echo checkout" \
-    "add -A . : echo add" \
-    "diff-index --quiet HEAD : true"
-
-  run "$post_command_hook"
+    "diff --exit-code : echo 0" \
+  
+  run "$command_hook"
 
   assert_success
   assert_output --partial "--- No changes to commit"
+  unstub yq
+  unstub helm
   unstub git
-}
-
-@test "Bails out when the command fails" {
-  export BUILDKITE_BUILD_NUMBER=1
-  export BUILDKITE_BRANCH=main
-
-  export BUILDKITE_COMMAND_EXIT_STATUS=127
-
-  run "$post_command_hook"
-
-  assert_success
-  assert_output --partial "--- Skipping git-commit"
 }

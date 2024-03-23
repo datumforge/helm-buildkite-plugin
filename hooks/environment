@@ -1,5 +1,0 @@
-echo "--- :yaml: Setting yq version"
-export YQ_VERSION="v4.42.1"
-
-echo "--- :helm: Setting helm version"
-export HELM_VERSION="v3.14.0"

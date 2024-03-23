@@ -1,8 +1,13 @@
-echo "--- :yaml: Installing yq"
-curl -Lo /tmp/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64"
-chmod +x /tmp/yq
+#!/bin/bash
 
-echo "--- :helm Install helm"
-curl -Lo /tmp/helm.tar.gz "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
-tar --strip-components 1 --extract -C /tmp --file=/tmp/helm.tar.gz linux-amd64/helm
-chmod +x /tmp/helm
+set -o errexit # script exits when a command fails == set -e
+set -o nounset # script exits when tries to use undeclared variables == set -u
+set -o pipefail # causes pipelines to retain / set the last non-zero status
+
+# Install yq, if not available
+which yq || (apt-get install yq -y)
+
+# Install helm, if not available
+which helm || (apt-get install helm -y)
+
+exit 0

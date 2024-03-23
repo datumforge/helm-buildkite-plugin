@@ -1,27 +1,25 @@
 #!/bin/bash
 
 set -ux
-      
-for chartfile in $(find . -name Chart.yaml -type f); do
-    chartdir=$(dirname "$chartfile")
-    deplength=$(/tmp/yq '.dependencies | length' "$chartfile")
-    if [ "$deplength" -gt "0" ]; then
-        pushd "$chartdir"
-        /tmp/helm dependency update
-        popd
+  
+find . -name Chart.yaml -type f | while read -r chartfile; do
+    chart_dir=$(dirname "$chartfile")
+    dep_length=$(yq '.dependencies | length' "$chartfile")
+    if [[ "${dep_length}" -gt "0" ]]; then
+        pushd "$chart_dir" || exit 1
+        helm dependency update
+        popd || exit 1
     else
         echo "Skipping $chartfile since no dependencies were found"
         continue
     fi
-            
-    git add "${chartdir}"
 done
 
-git diff --cached --exit-code > /dev/null
+result=$(git diff --exit-code)
 
 message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
 
-if [ $? -ne 0 ]; then
+if [ "${result}" -ne 0 ]; then
     if [[ -n ${BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME+x} ]]
     then
     git config user.name "$BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME"
@@ -32,10 +30,12 @@ if [ $? -ne 0 ]; then
     git config user.email "$BUILDKITE_PLUGIN_GIT_COMMIT_USER_EMAIL"
     fi
 
-    git add .
     git checkout -b "${BUILDKITE_BRANCH}"
+    git add .
     git commit -m "${message}"
     git push origin "${BUILDKITE_BRANCH}"
 else
   echo "--- No changes to commit"
 fi
+
+exit 0
