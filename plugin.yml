@@ -1,14 +1,18 @@
 ---
-name: template-buildkite-plugin
-description: what your plugin does
-author: Datum
+name: helm
+description: A buildkite plugin to update helm tarballs
+author: https://github.com/datumforge
 requirements:
-  - if you have requirements
+  - helm
+  - yq
 configuration:
   properties:
-    propertyname:
+    user:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+    message:
       type: string
-  required: []
-    # - if any properties are required
-  dependencies:
-    dependencyname: [dep]

@@ -1,0 +1,8 @@
+echo "--- :yaml: Installing yq"
+curl -Lo /tmp/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64"
+chmod +x /tmp/yq
+
+echo "--- :helm Install helm"
+curl -Lo /tmp/helm.tar.gz "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
+tar --strip-components 1 --extract -C /tmp --file=/tmp/helm.tar.gz linux-amd64/helm
+chmod +x /tmp/helm
