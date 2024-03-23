@@ -2,13 +2,13 @@
 
 set -ux
       
-for chartfile in $(find . -name Chart.yaml -type f); do
+find . -name Chart.yaml -type f | while read -r chartfile; do
     chartdir=$(dirname "$chartfile")
     deplength=$(/tmp/yq '.dependencies | length' "$chartfile")
     if [ "$deplength" -gt "0" ]; then
-        pushd "$chartdir"
+        pushd "$chartdir" || exit 1
         /tmp/helm dependency update
-        popd
+        popd || exit 1
     else
         echo "Skipping $chartfile since no dependencies were found"
         continue
@@ -18,10 +18,11 @@ for chartfile in $(find . -name Chart.yaml -type f); do
 done
 
 git diff --cached --exit-code > /dev/null
+result=$?
 
 message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
 
-if [ $? -ne 0 ]; then
+if [ $result -ne 0 ]; then
     if [[ -n ${BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME+x} ]]
     then
     git config user.name "$BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME"
