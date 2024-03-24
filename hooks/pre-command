@@ -20,5 +20,6 @@ echo "--- :yaml: Installing yq"
 curl -Lo /tmp/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64"
 chmod +x /tmp/yq
 
-echo "--- :helm Install helm"
+echo "--- :helm: Install helm"
+export USE_SUDO=false
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
