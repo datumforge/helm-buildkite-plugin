@@ -4,10 +4,10 @@ set -o errexit # script exits when a command fails == set -e
 set -o nounset # script exits when tries to use undeclared variables == set -u
 set -o pipefail # causes pipelines to retain / set the last non-zero status
 
-# Install yq, if not available
-which yq || (apt-get install yq -y)
+echo "--- :yaml: Installing yq"
+which yq  || ( wget "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -O yq \
+&& chmod +x yq \
+&& sudo cp yq /usr/local/bin/yq )
 
-# Install helm, if not available
-which helm || (apt-get install helm -y)
-
-exit 0
+echo "--- :helm: Install helm"
+which helm  || (curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash)

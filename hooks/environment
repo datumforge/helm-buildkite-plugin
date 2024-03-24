@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "--- :yaml: Setting yq version"
+export YQ_VERSION="v4.42.1"

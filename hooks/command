@@ -1,7 +1,14 @@
 #!/bin/bash
 
-set -ux
+set -o errexit # script exits when a command fails == set -e
+set -o nounset # script exits when tries to use undeclared variables == set -u
+set -o pipefail # causes pipelines to retain / set the last non-zero status
   
+message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
+username=${BUILDKITE_PLUGIN_HELM_USER_NAME:-""}
+email=${BUILDKITE_PLUGIN_HELM_USER_EMAIL:-""}
+ssh_commit=${BUILDKITE_PLUGIN_HELM_SSH_COMMIT:-"false"}
+
 find . -name Chart.yaml -type f | while read -r chartfile; do
     chart_dir=$(dirname "$chartfile")
     dep_length=$(yq '.dependencies | length' "$chartfile")
@@ -13,27 +20,37 @@ find . -name Chart.yaml -type f | while read -r chartfile; do
         echo "Skipping $chartfile since no dependencies were found"
         continue
     fi
+
+    git add "${chart_dir}"
 done
 
-result=$(git diff --exit-code)
 
-message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
+result=$(git diff --cached --exit-code >> /dev/null; echo $?)
 
-if [ "${result}" -ne 0 ]; then
-    if [[ -n ${BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME+x} ]]
+if [ "${result}" -ne "0" ]; then
+    if [[ -n ${username} ]]
     then
-    git config user.name "$BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME"
+    git config user.name "$username"
     fi
 
-    if [[ -n ${BUILDKITE_PLUGIN_GIT_COMMIT_USER_EMAIL+x} ]]
+    if [[ -n ${email} ]]
     then
-    git config user.email "$BUILDKITE_PLUGIN_GIT_COMMIT_USER_EMAIL"
+    git config user.email "$email"
     fi
 
     git checkout -b "${BUILDKITE_BRANCH}"
-    git add .
     git commit -m "${message}"
-    git push origin "${BUILDKITE_BRANCH}"
+
+    # set to use ssh instead of https if requested, otherwise use https with GITHUB_TOKEN
+    if [[ "${ssh_commit}" == "true" ]]
+    then
+        git config url."git@github.com:".insteadOf "https://github.com/"
+        git push origin "${BUILDKITE_BRANCH}"
+    else 
+        repo=$(echo "${BUILDKITE_REPO}" | sed 's/https:\/\///')
+        git push -u "https://${username}:${GITHUB_TOKEN}@${repo}" "${BUILDKITE_BRANCH}"
+    fi
+
 else
   echo "--- No changes to commit"
 fi
