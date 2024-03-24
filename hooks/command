@@ -5,6 +5,8 @@ set -o nounset # script exits when tries to use undeclared variables == set -u
 set -o pipefail # causes pipelines to retain / set the last non-zero status
   
 message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
+username=${BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME:-"Buildkite Plugin"}
+email=${BUILDKITE_PLUGIN_GIT_COMMIT_USER_EMAIL:"buildkite@example.com"}
 
 find . -name Chart.yaml -type f | while read -r chartfile; do
     chart_dir=$(dirname "$chartfile")
@@ -25,12 +27,12 @@ done
 result=$(git diff --cached --exit-code >> /dev/null; echo $?)
 
 if [ "${result}" -ne "0" ]; then
-    if [[ -n ${BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME+x} ]]
+    if [[ -n ${username} ]]
     then
     git config user.name "$BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME"
     fi
 
-    if [[ -n ${BUILDKITE_PLUGIN_GIT_COMMIT_USER_EMAIL+x} ]]
+    if [[ -n ${email} ]]
     then
     git config user.email "$BUILDKITE_PLUGIN_GIT_COMMIT_USER_EMAIL"
     fi
