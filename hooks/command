@@ -47,7 +47,6 @@ if [ "${result}" -ne "0" ]; then
         git config url."git@github.com:".insteadOf "https://github.com/"
         git push origin "${BUILDKITE_BRANCH}"
     else 
-        https://<username>:<access_token>@<remote-url-without-https>
         repo=$(echo "${BUILDKITE_REPO}" | sed 's/https:\/\///')
         git push -u "https://${username}:${GITHUB_TOKEN}@${repo}" "${BUILDKITE_BRANCH}"
     fi
