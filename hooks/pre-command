@@ -21,5 +21,4 @@ curl -Lo /tmp/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION
 chmod +x /tmp/yq
 
 echo "--- :helm: Install helm"
-export USE_SUDO=false
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
