@@ -2,7 +2,8 @@
 
 set -ux
 
-export yq="/tmp/yq"
+# Set yq path
+alias yq="/tmp/yq"
   
 find . -name Chart.yaml -type f | while read -r chartfile; do
     chart_dir=$(dirname "$chartfile")
