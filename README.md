@@ -23,6 +23,12 @@ steps:
 
 This buildkite plugin relies on the existence of a `charts` directory.
 
+## Authentication on commits
+
+By default, this plugin will attempt to push a commit back to the repository over `https`. When using `https` the `user.name` and `GITHUB_TOKEN` environment **must** be set. 
+
+If you prefer to push commits over `ssh`, set `ssh: true` and ensure the buildkite runner is setup with a valid ssh config to authorize commits.
+
 ## Developing
 
 Requires [taskfile](https://taskfile.dev/installation/) - `task lint` and `task test` to validate updates to the plugin
