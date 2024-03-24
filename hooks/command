@@ -41,7 +41,7 @@ if [ "${result}" -ne "0" ]; then
     git checkout -b "${BUILDKITE_BRANCH}"
     git commit -m "${message}"
 
-    # set to use ssh instead of https
+    # set to use ssh instead of https if requested, otherwise use https with GITHUB_TOKEN
     if [[ "${ssh_commit}" == "true" ]]
     then
         git config url."git@github.com:".insteadOf "https://github.com/"

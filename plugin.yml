@@ -14,7 +14,7 @@ configuration:
           type: string
         name:
           type: string
-    ssh_commit: 
+    ssh-commit: 
       type: boolean
     message:
       type: string
