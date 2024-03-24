@@ -7,6 +7,7 @@ set -o pipefail # causes pipelines to retain / set the last non-zero status
 message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
 username=${BUILDKITE_PLUGIN_HELM_USER_NAME:-""}
 email=${BUILDKITE_PLUGIN_HELM_USER_EMAIL:-""}
+ssh_commit=${BUILDKITE_PLUGIN_HELM_SSH_COMMIT:-"false"}
 
 find . -name Chart.yaml -type f | while read -r chartfile; do
     chart_dir=$(dirname "$chartfile")
@@ -37,12 +38,20 @@ if [ "${result}" -ne "0" ]; then
     git config user.email "$email"
     fi
 
-    # set to use ssh instead of https
-    git config url."git@github.com:".insteadOf "https://github.com/"
-
     git checkout -b "${BUILDKITE_BRANCH}"
     git commit -m "${message}"
-    git push origin "${BUILDKITE_BRANCH}"
+
+    # set to use ssh instead of https
+    if [[ "${ssh_commit}" == "true" ]]
+    then
+        git config url."git@github.com:".insteadOf "https://github.com/"
+        git push origin "${BUILDKITE_BRANCH}"
+    else 
+        https://<username>:<access_token>@<remote-url-without-https>
+        repo=$(echo "${BUILDKITE_REPO}" | sed 's/https:\/\///')
+        git push -u "https://${username}:${GITHUB_TOKEN}@${repo}" "${BUILDKITE_BRANCH}"
+    fi
+
 else
   echo "--- No changes to commit"
 fi
