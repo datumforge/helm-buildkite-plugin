@@ -56,7 +56,7 @@ export WHICH_STUB_DEBUG=/dev/tty
 
 @test "Configures git user.name" {
   export BUILDKITE_BRANCH=meow
-  export BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME="bender"
+  export BUILDKITE_PLUGIN_HELM_USER_NAME="bender"
 
   stub yq \
     "'.dependencies | length' ./tests/_example/Chart.yaml : echo 1" \
@@ -88,7 +88,7 @@ export WHICH_STUB_DEBUG=/dev/tty
 
 @test "Configures git user.email" {
   export BUILDKITE_BRANCH=meow
-  export BUILDKITE_PLUGIN_GIT_COMMIT_USER_EMAIL="bot@example.com"
+  export BUILDKITE_PLUGIN_HELM_USER_EMAIL="bot@example.com"
 
   stub yq \
     "'.dependencies | length' ./tests/_example/Chart.yaml : echo 1" \
