@@ -6,8 +6,8 @@ set -o pipefail # causes pipelines to retain / set the last non-zero status
 
 echo "--- :yaml: Installing yq"
 which yq  || ( wget "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -O yq \
-chmod +x yq \
-sudo cp yq /usr/local/bin/yq )
+&& chmod +x yq \
+&& sudo cp yq /usr/local/bin/yq )
 
 echo "--- :helm: Install helm"
 which helm  || (curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash)
