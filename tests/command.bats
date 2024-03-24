@@ -19,7 +19,7 @@ export WHICH_STUB_DEBUG=/dev/tty
 
   stub git \
     "add ./tests/_example : echo added files" \
-    "diff --cached --exit-code : echo 1" \
+    "diff --cached --exit-code : exit 1" \
     "checkout -b meow : echo branch checked out" \
     "commit -m 'Update Helm Tarballs' : echo commit message added" \
     "push origin meow : echo branch pushed" \
@@ -42,12 +42,16 @@ export WHICH_STUB_DEBUG=/dev/tty
 
   stub yq \
     "'.dependencies | length' ./tests/_example/Chart.yaml : echo 0" \
+
+  stub git \
+    "diff --cached --exit-code : exit 0" \
   
   run "$command_hook"
 
   assert_success
   assert_output --partial "no dependencies were found"
   unstub yq
+  unstub git
 }
 
 @test "Configures git user.name" {
@@ -62,7 +66,7 @@ export WHICH_STUB_DEBUG=/dev/tty
 
   stub git \
     "add ./tests/_example : echo added files" \
-    "diff --cached --exit-code : echo 1" \
+    "diff --cached --exit-code : exit 1" \
     "config user.name \"bender\" : echo configure user.name" \
     "checkout -b meow : echo branch checked out" \
     "commit -m 'Update Helm Tarballs' : echo commit message added" \
@@ -94,7 +98,7 @@ export WHICH_STUB_DEBUG=/dev/tty
 
   stub git \
     "add ./tests/_example : echo added files" \
-    "diff --cached --exit-code : echo 1" \
+    "diff --cached --exit-code : exit 1" \
     "config user.email \"bot@example.com\" : echo configure user.email" \
     "checkout -b meow : echo branch checked out" \
     "commit -m 'Update Helm Tarballs' : echo commit message added" \
@@ -126,7 +130,7 @@ export WHICH_STUB_DEBUG=/dev/tty
 
   stub git \
     "add ./tests/_example : echo added files" \
-    "diff --cached --exit-code : echo 1" \
+    "diff --cached --exit-code : exit 1" \
     "checkout -b meow : echo branch checked out" \
     "commit -m 'Good Morning!' : echo commit message added" \
     "push origin meow : echo branch pushed" \
@@ -155,7 +159,7 @@ export WHICH_STUB_DEBUG=/dev/tty
 
   stub git \
     "add ./tests/_example : echo added files" \
-    "diff --cached --exit-code : echo 0" \
+    "diff --cached --exit-code : exit 0" \
   
   run "$command_hook"
 

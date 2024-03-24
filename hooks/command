@@ -1,7 +1,11 @@
 #!/bin/bash
 
-set -ux
+set -o errexit # script exits when a command fails == set -e
+set -o nounset # script exits when tries to use undeclared variables == set -u
+set -o pipefail # causes pipelines to retain / set the last non-zero status
   
+message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
+
 find . -name Chart.yaml -type f | while read -r chartfile; do
     chart_dir=$(dirname "$chartfile")
     dep_length=$(yq '.dependencies | length' "$chartfile")
@@ -17,11 +21,10 @@ find . -name Chart.yaml -type f | while read -r chartfile; do
     git add "${chart_dir}"
 done
 
-result=$(git diff --cached --exit-code)
 
-message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
+result=$(git diff --cached --exit-code >> /dev/null; echo $?)
 
-if [ "${result}" -ne 0 ]; then
+if [ "${result}" -ne "0" ]; then
     if [[ -n ${BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME+x} ]]
     then
     git config user.name "$BUILDKITE_PLUGIN_GIT_COMMIT_USER_NAME"
