@@ -37,6 +37,9 @@ if [ "${result}" -ne "0" ]; then
     git config user.email "$email"
     fi
 
+    # set to use ssh instead of https
+    git config url."git@github.com:".insteadOf "https://github.com/"
+
     git checkout -b "${BUILDKITE_BRANCH}"
     git commit -m "${message}"
     git push origin "${BUILDKITE_BRANCH}"
