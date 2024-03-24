@@ -44,7 +44,7 @@ export WHICH_STUB_DEBUG=/dev/tty
   export BUILDKITE_REPO=https://github.com/datumforge/meow-charts
   export BUILDKITE_BRANCH=meow
   export GITHUB_TOKEN=gh_redacted
-  export BUILDKITE_PLUGIN_HELM_SSH_COMMIT=true
+  export BUILDKITE_PLUGIN_HELM_SSH=true
 
   stub yq \
     "'.dependencies | length' ./tests/_example/Chart.yaml : echo 1" \

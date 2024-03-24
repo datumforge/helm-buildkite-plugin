@@ -27,7 +27,7 @@ This buildkite plugin relies on the existence of a `charts` directory.
 
 By default, this plugin will attempt to push a commit back to the repository over `https`. When using `https` the `user.name` and `GITHUB_TOKEN` environment **must** be set. 
 
-If you prefer to push commits over `ssh`, set `ssh-commit: true` and ensure the buildkite runner is setup with a valid ssh config to authorize commits.
+If you prefer to push commits over `ssh`, set `ssh: true` and ensure the buildkite runner is setup with a valid ssh config to authorize commits.
 
 ## Developing
 

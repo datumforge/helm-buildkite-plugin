@@ -7,7 +7,7 @@ set -o pipefail # causes pipelines to retain / set the last non-zero status
 message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
 username=${BUILDKITE_PLUGIN_HELM_USER_NAME:-""}
 email=${BUILDKITE_PLUGIN_HELM_USER_EMAIL:-""}
-ssh_commit=${BUILDKITE_PLUGIN_HELM_SSH_COMMIT:-"false"}
+ssh_commit=${BUILDKITE_PLUGIN_HELM_SSH:-"false"}
 
 find . -name Chart.yaml -type f | while read -r chartfile; do
     chart_dir=$(dirname "$chartfile")
