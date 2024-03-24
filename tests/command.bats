@@ -18,9 +18,9 @@ export WHICH_STUB_DEBUG=/dev/tty
     "dependency update : echo dependencies updated" \
 
   stub git \
-    "diff --exit-code : echo 1" \
+    "add ./tests/_example : echo added files" \
+    "diff --cached --exit-code : echo 1" \
     "checkout -b meow : echo branch checked out" \
-    "add . : echo added files" \
     "commit -m 'Update Helm Tarballs' : echo commit message added" \
     "push origin meow : echo branch pushed" \
   
@@ -28,8 +28,8 @@ export WHICH_STUB_DEBUG=/dev/tty
 
   assert_success
   assert_output --partial "dependencies updated"
-  assert_output --partial "branch checked out"
   assert_output --partial "added files"
+  assert_output --partial "branch checked out"
   assert_output --partial "commit message added" 
   assert_output --partial "branch pushed"
   unstub yq
@@ -61,10 +61,10 @@ export WHICH_STUB_DEBUG=/dev/tty
     "dependency update : echo dependencies updated" \
 
   stub git \
-    "diff --exit-code : echo 1" \
+    "add ./tests/_example : echo added files" \
+    "diff --cached --exit-code : echo 1" \
     "config user.name \"bender\" : echo configure user.name" \
     "checkout -b meow : echo branch checked out" \
-    "add . : echo added files" \
     "commit -m 'Update Helm Tarballs' : echo commit message added" \
     "push origin meow : echo branch pushed" \
   
@@ -93,10 +93,10 @@ export WHICH_STUB_DEBUG=/dev/tty
     "dependency update : echo dependencies updated" \
 
   stub git \
-    "diff --exit-code : echo 1" \
+    "add ./tests/_example : echo added files" \
+    "diff --cached --exit-code : echo 1" \
     "config user.email \"bot@example.com\" : echo configure user.email" \
     "checkout -b meow : echo branch checked out" \
-    "add . : echo added files" \
     "commit -m 'Update Helm Tarballs' : echo commit message added" \
     "push origin meow : echo branch pushed" \
   
@@ -125,9 +125,9 @@ export WHICH_STUB_DEBUG=/dev/tty
     "dependency update : echo dependencies updated" \
 
   stub git \
-    "diff --exit-code : echo 1" \
+    "add ./tests/_example : echo added files" \
+    "diff --cached --exit-code : echo 1" \
     "checkout -b meow : echo branch checked out" \
-    "add . : echo added files" \
     "commit -m 'Good Morning!' : echo commit message added" \
     "push origin meow : echo branch pushed" \
   
@@ -154,7 +154,8 @@ export WHICH_STUB_DEBUG=/dev/tty
     "dependency update : echo dependencies updated" \
 
   stub git \
-    "diff --exit-code : echo 0" \
+    "add ./tests/_example : echo added files" \
+    "diff --cached --exit-code : echo 0" \
   
   run "$command_hook"
 

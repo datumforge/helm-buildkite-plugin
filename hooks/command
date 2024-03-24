@@ -13,9 +13,11 @@ find . -name Chart.yaml -type f | while read -r chartfile; do
         echo "Skipping $chartfile since no dependencies were found"
         continue
     fi
+
+    git add "${chart_dir}"
 done
 
-result=$(git diff --exit-code)
+result=$(git diff --cached --exit-code)
 
 message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
 
@@ -31,7 +33,6 @@ if [ "${result}" -ne 0 ]; then
     fi
 
     git checkout -b "${BUILDKITE_BRANCH}"
-    git add .
     git commit -m "${message}"
     git push origin "${BUILDKITE_BRANCH}"
 else
