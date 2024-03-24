@@ -4,15 +4,21 @@ set -o errexit # script exits when a command fails == set -e
 set -o nounset # script exits when tries to use undeclared variables == set -u
 set -o pipefail # causes pipelines to retain / set the last non-zero status
 
-# Install yq, if not available
-which yq || ( add-apt-repository ppa:rmescandon/yq \
-&& apt update &&  \
-apt install yq -y)
+# # Install yq, if not available
+# which yq || ( add-apt-repository ppa:rmescandon/yq \
+# && apt update &&  \
+# apt install yq -y)
 
-# Install helm, if not available
-which helm || ( curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | tee /usr/share/keyrings/helm.gpg > /dev/null \
- && apt-get install apt-transport-https --yes && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list  \
-    && apt-get update && apt-get install helm -y)
+# # Install helm, if not available
+# which helm || ( curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | tee /usr/share/keyrings/helm.gpg > /dev/null \
+#  && apt-get install apt-transport-https --yes && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list  \
+#     && apt-get update && apt-get install helm -y)
 
-exit 0
+# exit 0
 
+echo "--- :yaml: Installing yq"
+curl -Lo /tmp/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64"
+chmod +x /tmp/yq
+
+echo "--- :helm Install helm"
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
