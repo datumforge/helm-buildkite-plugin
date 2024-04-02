@@ -1,6 +1,8 @@
 [![Build status](https://badge.buildkite.com/2f8a9e7c6ef1a04d686b9a94847d9d56b0a46ea49e2d598268.svg)](https://buildkite.com/datum/helm-buildkite-plugin)
 
-# helm
+Credit to [equinixmetal](https://github.com/equinixmetal-buildkite/helm-tar-update-buildkite-plugin) for the inspiration. 
+
+# helm-buildkite-plugin
 
 This re-usable workflow ensures that when a helm dependency update happens, a tarball is downloaded.
 

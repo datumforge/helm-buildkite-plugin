@@ -8,6 +8,8 @@ message=${BUILDKITE_PLUGIN_HELM_MESSAGE:-"Update Helm Tarballs"}
 username=${BUILDKITE_PLUGIN_HELM_USER_NAME:-""}
 email=${BUILDKITE_PLUGIN_HELM_USER_EMAIL:-""}
 ssh_commit=${BUILDKITE_PLUGIN_HELM_SSH:-"false"}
+ssh_sign=${BUILDKITE_PLUGIN_HELM_SSH_SIGN:-"false"}
+gpg_sign=${BUILDKITE_PLUGIN_HELM_GPG_SIGN:-"false"}
 
 find . -name Chart.yaml -type f | while read -r chartfile; do
     chart_dir=$(dirname "$chartfile")
@@ -38,8 +40,19 @@ if [ "${result}" -ne "0" ]; then
     git config user.email "$email"
     fi
 
+    flags=""
+    if [[ "${ssh_sign}" == "true" ]]
+    then
+        flags="${flags} --signoff"
+    fi
+
+    if [[ "${gpg_sign}" == "true" ]]
+    then
+        flags="${flags} --gpg-sign"
+    fi
+
     git checkout -b "${BUILDKITE_BRANCH}"
-    git commit -m "${message}"
+    git commit "${flags}" -m "${message}"
 
     # set to use ssh instead of https if requested, otherwise use https with GITHUB_TOKEN
     if [[ "${ssh_commit}" == "true" ]]
