@@ -23,7 +23,7 @@ export WHICH_STUB_DEBUG=/dev/tty
     "add ./tests/_example : echo added files" \
     "diff --cached --exit-code : exit 1" \
     "checkout -b meow : echo branch checked out" \
-    "commit -m 'Update Helm Tarballs' : echo commit message added" \
+    "commit \"\" -m 'Update Helm Tarballs' : echo commit message added" \
     "push -u \"https://:gh_redacted@github.com/datumforge/meow-charts\" meow : echo branch pushed" \
   
   run "$command_hook"
@@ -56,7 +56,77 @@ export WHICH_STUB_DEBUG=/dev/tty
     "add ./tests/_example : echo added files" \
     "diff --cached --exit-code : exit 1" \
     "checkout -b meow : echo branch checked out" \
-    "commit -m 'Update Helm Tarballs' : echo commit message added" \
+    "commit \"\" -m 'Update Helm Tarballs' : echo commit message added" \
+    "config url.\"git@github.com:\".insteadOf \"https://github.com/\" : echo config set" \
+    "push origin meow : echo branch pushed" \
+  
+  run "$command_hook"
+
+  assert_success
+  assert_output --partial "dependencies updated"
+  assert_output --partial "added files"
+  assert_output --partial "branch checked out"
+  assert_output --partial "commit message added" 
+  assert_output --partial "config set"
+  assert_output --partial "branch pushed"
+  unstub yq
+  unstub helm
+  unstub git
+}
+
+@test "Commits all changes over ssh and sign" {
+  export BUILDKITE_REPO=https://github.com/datumforge/meow-charts
+  export BUILDKITE_BRANCH=meow
+  export GITHUB_TOKEN=gh_redacted
+  export BUILDKITE_PLUGIN_HELM_SSH=true
+  export BUILDKITE_PLUGIN_HELM_SSH_SIGN=true
+
+  stub yq \
+    "'.dependencies | length' ./tests/_example/Chart.yaml : echo 1" \
+
+  stub helm \
+    "dependency update : echo dependencies updated" \
+
+  stub git \
+    "add ./tests/_example : echo added files" \
+    "diff --cached --exit-code : exit 1" \
+    "checkout -b meow : echo branch checked out" \
+    "commit \" --signoff\" -m 'Update Helm Tarballs' : echo commit message added" \
+    "config url.\"git@github.com:\".insteadOf \"https://github.com/\" : echo config set" \
+    "push origin meow : echo branch pushed" \
+  
+  run "$command_hook"
+
+  assert_success
+  assert_output --partial "dependencies updated"
+  assert_output --partial "added files"
+  assert_output --partial "branch checked out"
+  assert_output --partial "commit message added" 
+  assert_output --partial "config set"
+  assert_output --partial "branch pushed"
+  unstub yq
+  unstub helm
+  unstub git
+}
+
+@test "Commits all changes over ssh and gpg sign" {
+  export BUILDKITE_REPO=https://github.com/datumforge/meow-charts
+  export BUILDKITE_BRANCH=meow
+  export GITHUB_TOKEN=gh_redacted
+  export BUILDKITE_PLUGIN_HELM_SSH=true
+  export BUILDKITE_PLUGIN_HELM_GPG_SIGN=true
+
+  stub yq \
+    "'.dependencies | length' ./tests/_example/Chart.yaml : echo 1" \
+
+  stub helm \
+    "dependency update : echo dependencies updated" \
+
+  stub git \
+    "add ./tests/_example : echo added files" \
+    "diff --cached --exit-code : exit 1" \
+    "checkout -b meow : echo branch checked out" \
+    "commit \" --gpg-sign\" -m 'Update Helm Tarballs' : echo commit message added" \
     "config url.\"git@github.com:\".insteadOf \"https://github.com/\" : echo config set" \
     "push origin meow : echo branch pushed" \
   
@@ -110,7 +180,7 @@ export WHICH_STUB_DEBUG=/dev/tty
     "diff --cached --exit-code : exit 1" \
     "config user.name \"bender\" : echo configure user.name" \
     "checkout -b meow : echo branch checked out" \
-    "commit -m 'Update Helm Tarballs' : echo commit message added" \
+    "commit \"\" -m 'Update Helm Tarballs' : echo commit message added" \
     "push -u \"https://bender:gh_redacted@github.com/datumforge/meow-charts\" meow : echo branch pushed" \
   
   run "$command_hook"
@@ -144,7 +214,7 @@ export WHICH_STUB_DEBUG=/dev/tty
     "diff --cached --exit-code : exit 1" \
     "config user.email \"bot@example.com\" : echo configure user.email" \
     "checkout -b meow : echo branch checked out" \
-    "commit -m 'Update Helm Tarballs' : echo commit message added" \
+    "commit \"\" -m 'Update Helm Tarballs' : echo commit message added" \
     "push -u \"https://:gh_redacted@github.com/datumforge/meow-charts\" meow : echo branch pushed" \
   
   run "$command_hook"
@@ -177,7 +247,7 @@ export WHICH_STUB_DEBUG=/dev/tty
     "add ./tests/_example : echo added files" \
     "diff --cached --exit-code : exit 1" \
     "checkout -b meow : echo branch checked out" \
-    "commit -m 'Good Morning!' : echo commit message added" \
+    "commit \"\" -m 'Good Morning!' : echo commit message added" \
     "push -u \"https://:gh_redacted@github.com/datumforge/meow-charts\" meow : echo branch pushed" \
   
   run "$command_hook"

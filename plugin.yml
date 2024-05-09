@@ -18,3 +18,7 @@ configuration:
       type: boolean
     message:
       type: string
+    ssh-sign:
+      type: boolean
+    gpg-sign:
+      type: boolean
